@@ -1,0 +1,13 @@
+{
+  "name": "placement-portal-job-notifier-lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda trigger to send job notifications using Nodemailer",
+  "main": "index.mjs",
+  "type": "module",
+  "scripts": {
+    "zip": "zip -r function.zip index.mjs package.json node_modules"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.13"
+  }
+}
