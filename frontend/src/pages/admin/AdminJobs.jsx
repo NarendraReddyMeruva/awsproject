@@ -16,6 +16,7 @@ export const AdminJobs = () => {
   const [minCgpa, setMinCgpa] = useState('0');
   const [maxBacklogs, setMaxBacklogs] = useState('0');
   const [allowedBranches, setAllowedBranches] = useState(['CSE', 'ECE']);
+  const [link, setLink] = useState('');
 
   const branchesOptions = ['CSE', 'ECE', 'EEE', 'IT', 'MECH', 'CIVIL', 'MCA'];
 
@@ -47,6 +48,29 @@ export const AdminJobs = () => {
     }
   };
 
+  const handleDeleteJob = async (jobId) => {
+    if (!window.confirm('Are you sure you want to delete this job opportunity?')) {
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE_URL}/jobs/${jobId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        showToast('Job opportunity deleted successfully!');
+        fetchJobs();
+      } else {
+        const data = await res.json();
+        showToast(data.message || 'Error deleting job', 'error');
+      }
+    } catch (err) {
+      showToast('Failed to connect to the server', 'error');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title || !company || !description || !packageDetail || !deadline) {
@@ -73,6 +97,7 @@ export const AdminJobs = () => {
           description,
           packageDetail,
           deadline,
+          link,
           eligibilityCriteria: {
             minCgpa: Number(minCgpa),
             maxBacklogs: Number(maxBacklogs),
@@ -90,6 +115,7 @@ export const AdminJobs = () => {
         setDescription('');
         setPackageDetail('');
         setDeadline('');
+        setLink('');
         setMinCgpa('0');
         setMaxBacklogs('0');
         setAllowedBranches(['CSE', 'ECE']);
@@ -179,6 +205,18 @@ export const AdminJobs = () => {
             </div>
           </div>
 
+          <div className="form-group">
+            <label htmlFor="link">Application / Registration Link</label>
+            <input 
+              type="url" 
+              id="link"
+              className="form-control"
+              placeholder="e.g. https://careers.company.com/apply"
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+            />
+          </div>
+
           {/* Eligibility Specs */}
           <div className="glass-panel" style={{ background: 'rgba(255,255,255,0.01)', padding: '1rem', borderStyle: 'dashed', marginBottom: '1.25rem' }}>
             <h3 style={{ fontSize: '0.95rem', marginBottom: '0.75rem', color: 'var(--text-primary)' }}>Eligibility Parameters</h3>
@@ -259,10 +297,33 @@ export const AdminJobs = () => {
                     <span className="job-company">{job.company}</span>
                     <h3 className="job-title">{job.title}</h3>
                   </div>
-                  <span className="badge badge-success">{job.packageDetail}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+                    <span className="badge badge-success">{job.packageDetail}</span>
+                    <button 
+                      onClick={() => handleDeleteJob(job.jobId)}
+                      className="btn btn-danger"
+                      style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem', minHeight: 'unset', width: 'auto' }}
+                    >
+                      Delete 🗑️
+                    </button>
+                  </div>
                 </div>
 
                 <p className="job-description">{job.description}</p>
+
+                {job.link && (
+                  <div style={{ marginTop: '-0.5rem' }}>
+                    <a 
+                      href={job.link} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="btn btn-secondary"
+                      style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', width: 'auto', display: 'inline-flex' }}
+                    >
+                      Application Link 🔗
+                    </a>
+                  </div>
+                )}
 
                 <div className="job-eligibility">
                   <div className="job-eligibility-title">Eligibility Criteria:</div>

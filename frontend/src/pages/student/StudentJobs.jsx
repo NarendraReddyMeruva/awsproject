@@ -110,6 +110,31 @@ export const StudentJobs = () => {
 
                 <p className="job-description">{job.description}</p>
 
+                {/* Apply Button & Link */}
+                {job.link && (
+                  <div style={{ marginTop: '-0.5rem', marginBottom: '0.5rem' }}>
+                    {eligibility.eligible ? (
+                      <a 
+                        href={job.link} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="btn btn-primary"
+                        style={{ padding: '0.5rem 1.25rem', fontSize: '0.9rem', width: 'auto', display: 'inline-flex', textDecoration: 'none' }}
+                      >
+                        Apply Now 🚀
+                      </a>
+                    ) : (
+                      <button 
+                        className="btn" 
+                        disabled 
+                        style={{ padding: '0.5rem 1.25rem', fontSize: '0.9rem', width: 'auto', display: 'inline-flex', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}
+                      >
+                        Apply (Ineligible) 🔒
+                      </button>
+                    )}
+                  </div>
+                )}
+
                 {/* Job Specs */}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', fontSize: '0.85rem', color: 'var(--text-secondary)', padding: '0.5rem 0' }}>
                   <div>💰 Package: <strong style={{ color: 'var(--text-primary)' }}>{job.packageDetail}</strong></div>

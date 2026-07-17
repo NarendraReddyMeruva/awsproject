@@ -1,4 +1,4 @@
-import { ScanCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { ScanCommand, PutCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import { dynamoDb } from '../config/aws.js';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
@@ -8,7 +8,7 @@ dotenv.config();
 const JOBS_TABLE = process.env.AWS_DYNAMODB_JOBS_TABLE || 'PlacementPortal_Jobs';
 
 export const createJob = async (req, res) => {
-  const { title, company, description, eligibilityCriteria, packageDetail, deadline } = req.body;
+  const { title, company, description, eligibilityCriteria, packageDetail, deadline, link } = req.body;
 
   if (!title || !company || !description || !eligibilityCriteria || !packageDetail || !deadline) {
     return res.status(400).json({ message: 'All job fields are required.' });
@@ -34,6 +34,7 @@ export const createJob = async (req, res) => {
       },
       packageDetail,
       deadline,
+      link: link || '',
       postedDate: new Date().toISOString(),
       postedBy: req.user.userId,
     };
@@ -49,6 +50,28 @@ export const createJob = async (req, res) => {
   } catch (err) {
     console.error('Create job error:', err);
     res.status(500).json({ message: 'Error posting job opportunity.', error: err.message });
+  }
+};
+
+export const deleteJob = async (req, res) => {
+  const { jobId } = req.params;
+
+  if (!jobId) {
+    return res.status(400).json({ message: 'Job ID is required.' });
+  }
+
+  try {
+    const deleteParams = {
+      TableName: JOBS_TABLE,
+      Key: { jobId },
+    };
+
+    await dynamoDb.send(new DeleteCommand(deleteParams));
+
+    res.status(200).json({ message: 'Job opportunity deleted successfully!' });
+  } catch (err) {
+    console.error('Delete job error:', err);
+    res.status(500).json({ message: 'Error deleting job opportunity.', error: err.message });
   }
 };
 
@@ -77,6 +100,7 @@ export const getAllJobs = async (req, res) => {
           },
           packageDetail: "4.5 LPA",
           deadline: new Date(Date.now() + 86400000 * 10).toISOString().split('T')[0],
+          link: "https://www.cognizant.com/careers",
           postedDate: new Date().toISOString(),
           postedBy: "admin"
         },
@@ -92,6 +116,7 @@ export const getAllJobs = async (req, res) => {
           },
           packageDetail: "15 LPA (Stipend: 80K/mo)",
           deadline: new Date(Date.now() + 86400000 * 5).toISOString().split('T')[0],
+          link: "https://careers.microsoft.com",
           postedDate: new Date().toISOString(),
           postedBy: "admin"
         }

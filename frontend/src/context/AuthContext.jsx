@@ -1,12 +1,14 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 
+const AuthContext = createContext(null);
+
 const getApiBaseUrl = () => {
   const hostname = window.location.hostname;
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
     return 'http://localhost:5000/api';
   }
   // For EC2 instances, connect to port 5000 on the same host/IP
-  return `${window.location.protocol}//${hostname}:5000/api`;
+  return 'https://placement-portal-n6ai.onrender.com/api';
 };
 
 const API_BASE_URL = getApiBaseUrl();

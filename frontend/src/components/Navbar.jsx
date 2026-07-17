@@ -3,30 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export const Navbar = () => {
-  const { user, logout, API_BASE_URL } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [serverIp, setServerIp] = useState('Resolving...');
-
-  // Poll server IP for load balancer demo
-  useEffect(() => {
-    const fetchServerIp = async () => {
-      try {
-        const res = await fetch(`${API_BASE_URL.replace('/api', '')}/api/server-info`);
-        if (res.ok) {
-          const data = await res.json();
-          setServerIp(data.serverIp);
-        }
-      } catch (err) {
-        console.error('Failed to poll server host address:', err);
-        setServerIp('127.0.0.1 (Offline)');
-      }
-    };
-
-    fetchServerIp();
-    const interval = setInterval(fetchServerIp, 5000); // Poll every 5 seconds
-    return () => clearInterval(interval);
-  }, [API_BASE_URL]);
 
   const handleLogout = () => {
     logout();
@@ -43,12 +22,6 @@ export const Navbar = () => {
         <div className="navbar-brand" onClick={() => navigate(user ? (user.role === 'admin' ? '/admin' : '/dashboard') : '/login')}>
           <span style={{ fontSize: '1.75rem' }}>🎓</span>
           <span className="gradient-text">Placement Cell Automation</span>
-        </div>
-
-        {/* Load Balancer Server Host IP Tracker */}
-        <div className="host-indicator">
-          <span className="host-pulse"></span>
-          <span>HOST IP: <strong>{serverIp}</strong></span>
         </div>
 
         {user && (
