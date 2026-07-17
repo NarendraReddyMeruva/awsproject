@@ -5,7 +5,7 @@ const AuthContext = createContext(null);
 const getApiBaseUrl = () => {
   const hostname = window.location.hostname;
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'http://localhost:5000/api';
+    return 'http://placement-portal-n6ai.onrender.com/api';
   }
   // For EC2 instances, connect to port 5000 on the same host/IP
   return 'https://placement-portal-n6ai.onrender.com/api';
